@@ -4,11 +4,6 @@ import logging
 cluster = Cluster(['127.0.0.1'], port=9042)
 session = cluster.connect()
 logging.info("connected to Cassandra")
-session.execute("""
-CREATE KEYSPACE IF NOT EXISTS funny
-WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': 1 }
-""")
-logging.info("have keyspace")
 session.set_keyspace('funny')
 logging.info("connected to keyspace")
 session.execute(""" CREATE INDEX IF NOT EXISTS ON funny.pic (ENTRIES(object_details));  """)

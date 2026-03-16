@@ -1,7 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from src.api.actions import insert_image
-from src.models.requests import InsertRequest
 import logging
 
 main_router = APIRouter()
