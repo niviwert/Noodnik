@@ -1,6 +1,4 @@
-import os
 from elasticsearch import Elasticsearch, AuthenticationException
-
 
 CA_CERT_PATH = "/home/mtmn15/http_ca.crt"
 enrolment_token = 'eyJ2ZXIiOiI4LjE0LjAiLCJhZHIiOlsiMTcyLjIwLjAuMjo5MjAwIl0sImZnciI6IjZkZjA0NWRkNjgzMjk0NmU0YWE3NjVmNzJmZDgwNGI1ODI4ODFjMjEzZGFiZGU0ZjU4NmJhMDhhYzZiZjI2ODEiLCJrZXkiOiJWRUpFOXB3QlZ3NjBPaVVQTlJENDpIRnJ4TTdKNWVzMXBHMFg0NDdjaFhBIn0='
@@ -11,6 +9,8 @@ es = Elasticsearch(
     ca_certs=CA_CERT_PATH,
     basic_auth=('elastic', 'V2zL1ApSGEuss24*pP6='),
 )
+
+
 def query_match(field: str, value: str):
     res = es.search(index='md',
                     query={
@@ -26,16 +26,16 @@ def query_match(field: str, value: str):
     return res
 
 
-def query_range(field :str, gte, lte):
+def query_range(field: str, gte, lte):
     res = es.search(index='md',
                     query={
                         "range": {
                             field: {
                                 "gte": gte,
                                 "lte": lte
-                                }
                             }
                         }
+                    }
                     )
     hits = res['hits']['hits']
     for hit in hits:
@@ -43,21 +43,20 @@ def query_range(field :str, gte, lte):
     return res
 
 
-#todo check if its ok 
 def query_geo_poligon(filed: str, lon1, lat1, lon2, lat2):
-    res = es.search(index='md', 
+    res = es.search(index='md',
                     query={
                         "geo_polygon": {
                             filed: {
                                 "points": [
-                                {
-                                    "lat": lat1,
-                                    "lon": lon1
-                                },
-                                {
-                                    "lat": lat2,
-                                    "lon": lon2
-                                }
+                                    {
+                                        "lat": lat1,
+                                        "lon": lon1
+                                    },
+                                    {
+                                        "lat": lat2,
+                                        "lon": lon2
+                                    }
                                 ]
                             }
                         }
@@ -67,62 +66,3 @@ def query_geo_poligon(filed: str, lon1, lat1, lon2, lat2):
         print(f"Score: {hit['_score']}, Source: {hit['_source']}")
     return res
 
-def main():
-    meta_data: dict = {
-        "asset_id": "550e8400-e29b-41d4-a716-446655440067",
-        "asset_type": "Artistic Photograph",
-        "object_details": {
-            "title": "Urban Solitude",
-            "artist": "Elena Rossi",
-        },
-        "capture_gps": {
-            "type": "Sensor Location (Point)",
-            "latitude": 48.8640,
-            "longitude": 2.3250
-        },
-        "digital_capture":
-            {
-                "photographer": "Elena Rossi"
-            }
-    }
-    print(query_match('asset_type', meta_data['asset_type']))
-    
-    
-    #object identification schema:
-    ob_iden={
-        "filename": "סליים שי.jpeg",
-        "detections": [
-            {
-            "object": "person",
-            "confidence": 0.6288753151893616
-            },
-            {
-            "object": "person",
-            "confidence": 0.40716880559921265
-            }
-        ]
-        }
-    
-    
-    #text_extraction:
-    txt_extract={
-        "filename": "סליים שי.jpeg",
-        "extracted_text": ""
-        }
-    
-    
-    #resp = es.search(
-    #    index="metadata",
-    #    from_=40,
-    #    size=20,
-    #    query={
-    #        "term": {
-    #            "asset_type": "Artistic Photograph"
-    #        }
-    #    },
-    #)
-    #print(resp)
-
-
-if __name__ == "__main__":
-    main()
