@@ -11,5 +11,5 @@ cassandra = APIRouter()
 @cassandra.get("/metadata_by_id/{id}")
 async def metadata_by_id(id_pic: str):
     data =search_id(id_pic)
-    answer = data + get_image_from_s3(data[0])
+    answer = data
     return answer
